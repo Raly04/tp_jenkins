@@ -1,14 +1,14 @@
-version: "2"
-
 services:
   jenkins:
-    image: jenkinsci/blueocean
+    image: jenkins/jenkins:2.580.2-lts-jdk21
     user: root
     ports:
-      - "8080:8080"
+      # port hôte 8090 → port jenkins 8080 (8080 déjà pris sur la machine)
+      - "8090:8080"
     volumes:
       # données de jenkins : survivent à la destruction du conteneur
-      - ./jenkins_data:/var/jenkins
+      # (JENKINS_HOME est /var/jenkins_home dans cette image, pas /var/jenkins)
+      - ./jenkins_data:/var/jenkins_home
       # persistance des données de build
       - ./home:/home
       # accès au socket docker de l'hôte pour que jenkins puisse utiliser docker

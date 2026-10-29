@@ -1,0 +1,11 @@
+# runtime jenkins (données volatiles, à ne jamais versionner)
+jenkins_simple/jenkins_data/
+jenkins_simple/home/
+
+# python
+__pycache__/
+*.pyc
+venv/
+
+# divers
+.DS_Store
