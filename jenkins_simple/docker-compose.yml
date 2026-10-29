@@ -1,0 +1,15 @@
+version: "2"
+
+services:
+  jenkins:
+    image: jenkinsci/blueocean
+    user: root
+    ports:
+      - "8080:8080"
+    volumes:
+      # données de jenkins : survivent à la destruction du conteneur
+      - ./jenkins_data:/var/jenkins
+      # persistance des données de build
+      - ./home:/home
+      # accès au socket docker de l'hôte pour que jenkins puisse utiliser docker
+      - /var/run/docker.sock:/var/run/docker.sock
