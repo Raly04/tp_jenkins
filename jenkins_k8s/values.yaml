@@ -1,0 +1,66 @@
+# =============================================================================
+# values.yaml — Jenkins sur Kubernetes (Helm chart)
+# TP3 ENI — Mini Projet Jenkins / Docker / Kubernetes
+# =============================================================================
+# Ce fichier est basé sur le chart officiel Jenkins : https://charts.jenkins.io/
+# Le dépôt stable/k8s mentionné dans le PDF est déprécié.
+# =============================================================================
+
+# --- Identifiants administrateur Jenkins (À PERSONNALISER) ---
+adminUser: admin
+adminPassword: admin
+
+# --- Service exposé en NodePort (demande du PDF) ---
+serviceType: NodePort
+nodePort: 32000
+
+# --- Plugins à installer au démarrage ---
+# Blue Ocean est obligatoire pour le pipeline visuel (PDF)
+# Kubernetes + git + docker-workflow + kubernetes-cli pour les agents pods
+installPlugins:
+  - kubernetes:latest
+  - blueocean:latest
+  - git:latest
+  - pipeline:latest
+  - docker-workflow:latest
+  - kubernetes-cli:latest
+  - kubernetes-client-api:latest
+  - workflow-aggregator:latest
+
+# --- Persistence des données Jenkins ---
+persistence:
+  enabled: true
+  existingClaim: ""
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 8Gi
+
+# --- Agent Kubernetes (pods d'exécution des pipelines Jenkins) ---
+agent:
+  enabled: true
+  image: jenkins/inbound-agent:latest
+  jvmOptions: ""
+  workingDir: /home/jenkins/agent
+  command: ""
+  args: "${computer.jnlpmac} ${computer.name}"
+
+# --- Ressources allouées au master Jenkins ---
+master:
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+    limits:
+      cpu: "2"
+      memory: "2Gi"
+
+# --- Ingress (désactivé, on utilise NodePort) ---
+ingress:
+  enabled: false
+
+# --- Service ---
+service:
+  port: 8080
+  targetPort: 8080
+  nodePort: 32000
+  type: NodePort
