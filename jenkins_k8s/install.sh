@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # =============================================================================
 # install.sh — Installer Jenkins sur Kubernetes avec Helm
 # TP3 ENI — Mini Projet Jenkins / Docker / Kubernetes
