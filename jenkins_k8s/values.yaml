@@ -38,14 +38,13 @@ persistence:
 # --- Agent Kubernetes (pods d'exécution des pipelines Jenkins) ---
 agent:
   enabled: true
-  image: jenkins/inbound-agent:latest
   jvmOptions: ""
   workingDir: /home/jenkins/agent
   command: ""
   args: "${computer.jnlpmac} ${computer.name}"
 
-# --- Ressources allouées au master Jenkins ---
-master:
+# --- Ressources allouées au controller Jenkins ---
+controller:
   resources:
     requests:
       cpu: "250m"
