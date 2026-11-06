@@ -9,14 +9,16 @@
 
 controller:
   # --- Identifiants administrateur (demande du PDF) ---
-  adminUser: "admin"
-  adminPassword: "admin"
+  # chart >= 5.9 : les clés adminUser/adminPassword sont renommées
+  admin:
+    username: "admin"
+    password: "admin"
 
   # --- Service NodePort 32000 (demande du PDF) ---
-  service:
-    type: "NodePort"
-    port: 8080
-    nodePort: 32000
+  # clés actuelles du chart : controller.serviceType / servicePort / nodePort
+  serviceType: "NodePort"
+  servicePort: 8080
+  nodePort: 32000
 
   resources:
     requests:
