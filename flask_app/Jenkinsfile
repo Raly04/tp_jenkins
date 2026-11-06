@@ -44,24 +44,30 @@ spec:
     stage('Test python') {
       steps {
         container('python') {
-          sh "pip install -r requirements.txt"
-          sh "python test.py"
+          dir('flask_app') {
+            sh "pip install -r requirements.txt"
+            sh "python test.py"
+          }
         }
       }
     }
     stage('Build image') {
       steps {
         container('docker') {
-          sh "docker build -t localhost:4000/pythontest:latest ."
-          sh "docker push localhost:4000/pythontest:latest"
+          dir('flask_app') {
+            sh "docker build -t localhost:4000/pythontest:latest ."
+            sh "docker push localhost:4000/pythontest:latest"
+          }
         }
       }
     }
     stage('Deploy') {
       steps {
         container('kubectl') {
-          sh "kubectl apply -f ./kubernetes/deployment.yaml"
-          sh "kubectl apply -f ./kubernetes/service.yaml"
+          dir('flask_app') {
+            sh "kubectl apply -f ./kubernetes/deployment.yaml"
+            sh "kubectl apply -f ./kubernetes/service.yaml"
+          }
         }
       }
     }
