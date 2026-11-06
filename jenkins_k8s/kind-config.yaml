@@ -4,13 +4,22 @@
 # =============================================================================
 # Un cluster kind par défaut est fermé sur localhost :
 #   - pas de mapping de ports (NodePorts 32000/31000 injoignables depuis l'hôte)
-#   - containerd n'accepte que les registries HTTPS
-# Ce fichier résout les deux : extraPortMappings + patch containerd pour le
-# registry local en HTTP.
+#   - containerd 2.x n'accepte que les registries HTTPS
+# Ce fichier résout les deux.
 # =============================================================================
 apiVersion: kind.x-k8s.io/v1alpha4
 kind: Cluster
 name: tp-jenkins
+
+# --- Niveau cluster : patch containerd (syntaxe 2.x : config_path) ---------
+# Le vieux format `registry.mirrors` a été SUPPRIMÉ en containerd 2.0
+# (kind v0.31+, image kindest/node v1.35). Chaque registry est désormais
+# décrit par un hosts.toml dans /etc/containerd/certs.d (monté ci-dessous).
+containerdConfigPatches:
+  - |-
+    [plugins."io.containerd.grpc.v1.cri".registry]
+      config_path = "/etc/containerd/certs.d"
+
 nodes:
   - role: control-plane
     extraPortMappings:
@@ -18,26 +27,16 @@ nodes:
       - containerPort: 32000
         hostPort: 32000
         protocol: TCP
-      # App flask déployée par le pipeline (NodePort service/k8s)
+      # App flask déployée par le pipeline (NodePort)
       - containerPort: 31000
         hostPort: 31000
-        protocol: TCP
-      # Registry interne du cluster (NodePort, pour curl depuis l'hôte)
+        # protocol TCP implicite
+      # Registry interne du cluster (NodePort) — l'hôte garde le port 4000
       - containerPort: 30400
         hostPort: 4000
         protocol: TCP
-    # Déclarer les registries via config_path (syntaxe containerd 2.x) : le
-    # vieux format `registry.mirrors` a été SUPPRIMÉ en containerd 2.0
-    # (kind v0.31+). Chaque registry est décrit dans un hosts.toml.
-    # Déclarer les registries via config_path (syntaxe containerd 2.x) : le
-    # vieux format `registry.mirrors` a été SUPPRIMÉ en containerd 2.0
-    # (kind v0.31+). Chaque registry est décrit dans un hosts.toml (monté
-    # ci-dessous via extraMounts).
-    containerdConfigPatches:
-      - |-
-        [plugins."io.containerd.grpc.v1.cri".registry]
-          config_path = "/etc/containerd/certs.d"
     extraMounts:
+      # Fichiers hosts.toml des registries autorisés en HTTP (pull kubelet)
       - hostPath: /home/raly/Projets/Personal/tp_jenkins/jenkins_k8s/containerd-certs.d
         containerPath: /etc/containerd/certs.d
         readOnly: true
