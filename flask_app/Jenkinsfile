@@ -37,6 +37,7 @@ spec:
         - dockerd
         - -H
         - unix:///var/run/docker-shared/docker.sock
+        - --insecure-registry=registry.jenkins.svc.cluster.local:5000
       securityContext:
         privileged: true
       env:

@@ -1,0 +1,6 @@
+# Registry interne du cluster, vu depuis le kubelet du nœud (NodePort local)
+server = "http://localhost:30400"
+
+[host."http://localhost:30400"]
+  capabilities = ["pull", "resolve", "push"]
+  skip_verify = true
