@@ -29,11 +29,15 @@ nodes:
     # Déclarer les registries via config_path (syntaxe containerd 2.x) : le
     # vieux format `registry.mirrors` a été SUPPRIMÉ en containerd 2.0
     # (kind v0.31+). Chaque registry est décrit dans un hosts.toml.
-containerdConfigPatches:
-  - |-
-    [plugins."io.containerd.grpc.v1.cri".registry]
-      config_path = "/etc/containerd/certs.d"
-extraMounts:
-  - hostPath: /home/raly/Projets/Personal/tp_jenkins/jenkins_k8s/containerd-certs.d
-    containerPath: /etc/containerd/certs.d
-    readOnly: true
+    # Déclarer les registries via config_path (syntaxe containerd 2.x) : le
+    # vieux format `registry.mirrors` a été SUPPRIMÉ en containerd 2.0
+    # (kind v0.31+). Chaque registry est décrit dans un hosts.toml (monté
+    # ci-dessous via extraMounts).
+    containerdConfigPatches:
+      - |-
+        [plugins."io.containerd.grpc.v1.cri".registry]
+          config_path = "/etc/containerd/certs.d"
+    extraMounts:
+      - hostPath: /home/raly/Projets/Personal/tp_jenkins/jenkins_k8s/containerd-certs.d
+        containerPath: /etc/containerd/certs.d
+        readOnly: true
