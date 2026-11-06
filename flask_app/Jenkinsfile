@@ -11,6 +11,10 @@ metadata:
     component: ci
 spec:
   containers:
+    - name: jnlp
+      volumeMounts:
+        - mountPath: /home/jenkins/.ssh
+          name: github-known-hosts
     - name: python
       image: python:3.7
       command:
@@ -33,6 +37,9 @@ spec:
     - name: docker-sock
       hostPath:
         path: /var/run/docker.sock
+    - name: github-known-hosts
+      configMap:
+        name: github-known-hosts
 """
     }
   }
