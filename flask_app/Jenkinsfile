@@ -78,8 +78,9 @@ spec:
       steps {
         container('docker') {
           dir('flask_app') {
-            sh "docker build -t localhost:4000/pythontest:latest ."
-            sh "docker push localhost:4000/pythontest:latest"
+            // From pod: localhost = the pod → registry hosted IN the cluster
+            sh "docker build -t registry.jenkins.svc.cluster.local:5000/pythontest:latest ."
+            sh "docker push registry.jenkins.svc.cluster.local:5000/pythontest:latest"
           }
         }
       }

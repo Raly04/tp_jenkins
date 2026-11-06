@@ -1,65 +1,47 @@
 # =============================================================================
-# values.yaml — Jenkins sur Kubernetes (Helm chart)
+# values.yaml — Jenkins sur Kubernetes (chart officiel jenkins/jenkins)
 # TP3 ENI — Mini Projet Jenkins / Docker / Kubernetes
 # =============================================================================
-# Ce fichier est basé sur le chart officiel Jenkins : https://charts.jenkins.io/
-# Le dépôt stable/k8s mentionné dans le PDF est déprécié.
+# Les clés `adminUser`, `serviceType` au premier niveau du PDF sont celles de
+# l'ancien chart stable/jenkins (2020, déprécié). Dans le chart actuel (5.x),
+# tout se trouve sous `controller:`. Voir `helm show values jenkins/jenkins`.
 # =============================================================================
 
-# --- Identifiants administrateur Jenkins (À PERSONNALISER) ---
-adminUser: admin
-adminPassword: admin
-
-# --- Service exposé en NodePort (demande du PDF) ---
-serviceType: NodePort
-nodePort: 32000
-
-# --- Plugins à installer au démarrage ---
-# Blue Ocean est obligatoire pour le pipeline visuel (PDF)
-# Kubernetes + git + docker-workflow + kubernetes-cli pour les agents pods
-installPlugins:
-  - kubernetes:latest
-  - blueocean:latest
-  - git:latest
-  - pipeline:latest
-  - docker-workflow:latest
-  - kubernetes-cli:latest
-  - kubernetes-client-api:latest
-  - workflow-aggregator:latest
-
-# --- Persistence des données Jenkins ---
-persistence:
-  enabled: true
-  existingClaim: ""
-  storageClass: ""
-  accessMode: ReadWriteOnce
-  size: 8Gi
-
-# --- Agent Kubernetes (pods d'exécution des pipelines Jenkins) ---
-agent:
-  enabled: true
-  jvmOptions: ""
-  workingDir: /home/jenkins/agent
-  command: ""
-  args: "${computer.jnlpmac} ${computer.name}"
-
-# --- Ressources allouées au controller Jenkins ---
 controller:
+  # --- Identifiants administrateur (demande du PDF) ---
+  adminUser: "admin"
+  adminPassword: "admin"
+
+  # --- Service NodePort 32000 (demande du PDF) ---
+  service:
+    type: "NodePort"
+    port: 8080
+    nodePort: 32000
+
   resources:
     requests:
       cpu: "250m"
-      memory: "256Mi"
+      memory: "512Mi"
     limits:
       cpu: "2"
       memory: "2Gi"
 
-# --- Ingress (désactivé, on utilise NodePort) ---
-ingress:
-  enabled: false
+  # --- Persiste les jobs/plugins/données même si le pod meurt ---
+  persistence:
+    enabled: true
+    size: "8Gi"
 
-# --- Service ---
-service:
-  port: 8080
-  targetPort: 8080
-  nodePort: 32000
-  type: NodePort
+  # --- ServiceAccount utilisé par les agents pod pour kubectl ---
+  serviceAccount:
+    create: true
+    name: "jenkins"
+
+serviceAccount:
+  create: true
+  name: "jenkins"
+
+agents:
+  serviceAccount: "jenkins"
+
+# --- Blue Ocean est installé manuellement via l'UI (étape du PDF) ---
+# commande : helm install --name-template jenkins -f values.yaml jenkins/jenkins

@@ -1,0 +1,33 @@
+# =============================================================================
+# kind-config.yaml — Cluster kind "propre" pour le TP3
+# TP3 ENI — Mini Projet Jenkins / Docker / Kubernetes
+# =============================================================================
+# Un cluster kind par défaut est fermé sur localhost :
+#   - pas de mapping de ports (NodePorts 32000/31000 injoignables depuis l'hôte)
+#   - containerd n'accepte que les registries HTTPS
+# Ce fichier résout les deux : extraPortMappings + patch containerd pour le
+# registry local en HTTP.
+# =============================================================================
+apiVersion: kind.sigs.k8s.io/v1alpha4
+kind: Cluster
+name: tp-jenkins
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      # Jenkins UI (NodePort du chart Helm)
+      - containerPort: 32000
+        hostPort: 32000
+        protocol: TCP
+      # App flask déployée par le pipeline (NodePort service/k8s)
+      - containerPort: 31000
+        hostPort: 31000
+        protocol: TCP
+      # Registry interne du cluster (NodePort, pour curl depuis l'hôte)
+      - containerPort: 30400
+        hostPort: 4000
+        protocol: TCP
+containerdConfigPatches:
+  - |-
+    # Autoriser pull/push en HTTP vers le registry du cluster (NodePort local)
+    [plugins."io.containerd.grpc.v1.cri".registry.mirrors."localhost:30400"]
+      endpoint = ["http://127.0.0.1:30400"]

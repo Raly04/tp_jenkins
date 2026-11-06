@@ -1,0 +1,20 @@
+# =============================================================================
+# rbac-agent.yaml — Droits kubectl pour les agents Jenkins
+# =============================================================================
+# Les pods agents exécutent `kubectl apply` (stage Deploy). Sans droits RBAC,
+# le kubectl du pod reçoit "403 Forbidden". On donne au SA `jenkins` le rôle
+# `edit` DANS le namespace jenkins (application des manifests du TP).
+# =============================================================================
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: jenkins-agents-edit
+  namespace: jenkins
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: edit
+subjects:
+  - kind: ServiceAccount
+    name: jenkins
+    namespace: jenkins
