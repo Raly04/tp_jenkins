@@ -16,5 +16,8 @@ roleRef:
   name: edit
 subjects:
   - kind: ServiceAccount
+    name: default
+    namespace: jenkins
+  - kind: ServiceAccount
     name: jenkins
     namespace: jenkins
