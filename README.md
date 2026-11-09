@@ -3,6 +3,20 @@
 Projet issu du TP3 (ENI, M2 DevOps). L'objectif est de construire un pipeline
 CI/CD complet avec Jenkins, Docker et Kubernetes.
 
+## Remise en route (après un reboot de la machine)
+
+Le cluster vit dans le conteneur Docker `tp-jenkins-control-plane` : Docker le
+relance au boot, mais certains pods peuvent rester bloqués (pull du registry
+avant que celui-ci soit prêt). Une commande suffit :
+
+```bash
+./jenkins_k8s/up.sh --with-portainer   # purges pods bloqués + attend tout vert
+```
+
+Accès : Jenkins <http://localhost:32000> (admin/admin) · app flask
+<http://localhost:31000> · registry <http://localhost:4000/v2/_catalog>
+
+
 ## Structure
 
 ```

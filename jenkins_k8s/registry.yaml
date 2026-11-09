@@ -35,6 +35,15 @@ spec:
             # registry en HTTP (pas de TLS) : réseau interne au cluster
             - name: REGISTRY_HTTP_ADDR
               value: ":5000"
+          # Sans volume, les images disparaissent au premier restart du
+          # conteneur (reboot de la machine) : le repository sous /var/lib/registry
+          # doit être monté depuis un volume du pod.
+          volumeMounts:
+            - name: registry-data
+              mountPath: /var/lib/registry
+      volumes:
+        - name: registry-data
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
