@@ -22,4 +22,6 @@ EXPOSE 5000
 # Changer d'user pour lancer l'app
 USER flask
 
-CMD ["./app.py"]
+# CMD exec-form : python3 au lieu de ./app.py → le conteneur ne dépend plus
+# du shebang ni du bit d'exécution (un shebang décalé d'un espace = exec format error)
+CMD ["python3", "app.py"]
